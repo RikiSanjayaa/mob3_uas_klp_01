@@ -54,7 +54,10 @@ class _AuthScreenState extends State<AuthScreen> {
           {
             'username': _enteredUsername,
             'email': _enteredEmail,
-            // 'image_url': imageURL,
+            'profile-picture':
+                null, // TODO: implement add profile picture inside my account page
+            'pinjaman': 0,
+            'angsuran': 0, // TODO: implement pinjaman & angsuran
           },
         );
       }

@@ -51,7 +51,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aplikasi Pinjol'),
+        leadingWidth: 200,
+        leading: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
+          child: GestureDetector(
+            onTap: () {
+              // TODO: create my account page
+            },
+            child: Row(
+              children: [
+                CircleAvatar(
+                  child: Image.asset(
+                    'assets/images/letter-p.png',
+                    height: 25,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  username ?? "username",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(
