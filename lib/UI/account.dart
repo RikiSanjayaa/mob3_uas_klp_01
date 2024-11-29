@@ -1,6 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -11,34 +11,19 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   late TextEditingController _usernameController;
-  String? username;
-  String? email;
+  late UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
-    _fetchUsername();
-    _usernameController = TextEditingController(text: username);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+    _usernameController = TextEditingController(text: userProvider.username);
   }
 
   @override
   void dispose() {
     _usernameController.dispose();
     super.dispose();
-  }
-
-  Future<void> _fetchUsername() async {
-    final authenticatedUser = FirebaseAuth.instance.currentUser;
-    if (authenticatedUser != null) {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(authenticatedUser.uid)
-          .get();
-      setState(() {
-        username = userDoc['username'];
-        email = authenticatedUser.email;
-      });
-    }
   }
 
   void _editUsername() {
@@ -63,18 +48,9 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
-                // TODO: user Provider for User data across screens
                 final newUsername = _usernameController.text;
-                final user = FirebaseAuth.instance.currentUser;
-                if (user != null) {
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(user.uid)
-                      .update({'username': newUsername});
-                  setState(() {
-                    username = newUsername;
-                  });
-                }
+                userProvider.setUsername(newUsername);
+                Navigator.of(context).pop();
               },
               child: const Text('Save'),
             ),
@@ -100,7 +76,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 const CircleAvatar(
                   radius: 80,
                   backgroundImage: AssetImage(
-                      'assets/images/letter-p.png'), // Replace with your image asset
+                      'assets/images/default-user.png'), // Replace with your image asset
                 ),
                 Positioned(
                     bottom: 0,
@@ -117,30 +93,32 @@ class _AccountScreenState extends State<AccountScreen> {
                     ))
               ]),
               const SizedBox(height: 60),
-              ListTile(
-                contentPadding: const EdgeInsets.fromLTRB(30, 0, 10, 0),
-                leading: const Icon(
-                  Icons.account_circle_rounded,
-                  size: 35,
-                ),
-                title: const Text(
-                  "Username",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                subtitle: Text(
-                  username ?? "username",
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(
-                    Icons.edit,
-                    color: Colors.blue,
+              Consumer<UserProvider>(builder: (context, userProvider, child) {
+                return ListTile(
+                  contentPadding: const EdgeInsets.fromLTRB(30, 0, 10, 0),
+                  leading: const Icon(
+                    Icons.account_circle_rounded,
+                    size: 35,
                   ),
-                  onPressed: _editUsername,
-                ),
-                onTap: _editUsername,
-              ),
+                  title: const Text(
+                    "Username",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    userProvider.username,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.blue,
+                    ),
+                    onPressed: _editUsername,
+                  ),
+                  onTap: _editUsername,
+                );
+              }),
               const Divider(
                 height: 0,
                 endIndent: 20,
@@ -157,7 +135,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 subtitle: Text(
-                  email ?? "email",
+                  userProvider.email,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600),
                 ),

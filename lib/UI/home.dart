@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mob3_uas_klp_01/UI/account.dart';
 import 'package:mob3_uas_klp_01/UI/anggota.dart';
 import 'package:mob3_uas_klp_01/UI/angsuran.dart';
 import 'package:mob3_uas_klp_01/UI/dashboard.dart';
+import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,14 +17,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   final PageController _pageController = PageController(initialPage: 1);
-
-  String? username;
-  String? email;
+  late UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
-    _fetchUsername();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
   }
 
   void _onItemTapped(int index) {
@@ -32,20 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     _pageController.animateToPage(index,
         duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-  }
-
-  Future<void> _fetchUsername() async {
-    final authenticatedUser = FirebaseAuth.instance.currentUser;
-    if (authenticatedUser != null) {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(authenticatedUser.uid)
-          .get();
-      setState(() {
-        username = userDoc['username'];
-        email = authenticatedUser.email;
-      });
-    }
   }
 
   @override
@@ -77,22 +62,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
-            child: Row(
-              children: [
-                CircleAvatar(
-                  child: Image.asset(
-                    'assets/images/letter-p.png',
-                    height: 25,
+            child:
+                Consumer<UserProvider>(builder: (context, userProvider, child) {
+              return Row(
+                children: [
+                  CircleAvatar(
+                    child: Image.asset(
+                      'assets/images/default-user.png',
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  username ?? "username",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w700, fontSize: 20),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  Text(
+                    userProvider.username,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 20),
+                  ),
+                ],
+              );
+            }),
           ),
         ),
         centerTitle: true,
@@ -134,15 +121,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: PageView(
         controller: _pageController,
-        children: [
+        children: const [
           // page anggota
-          const AnggotaScreen(),
+          AnggotaScreen(),
 
           // home page/dashboard
-          Dashboard(email: email, username: username),
+          Dashboard(),
 
           //  page angsuran
-          const AngsuranScreen(),
+          AngsuranScreen(),
         ],
       ),
     );
