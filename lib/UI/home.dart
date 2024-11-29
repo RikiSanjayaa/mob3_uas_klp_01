@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/UI/account.dart';
 import 'package:mob3_uas_klp_01/UI/anggota.dart';
 import 'package:mob3_uas_klp_01/UI/angsuran.dart';
 import 'package:mob3_uas_klp_01/UI/dashboard.dart';
@@ -56,7 +57,25 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
           child: GestureDetector(
             onTap: () {
-              // TODO: create my account page
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const AccountScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(0.0, 1.0);
+                    const end = Offset.zero;
+                    const curve = Curves.ease;
+
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
+
+                    return SlideTransition(
+                        position: offsetAnimation, child: child);
+                  },
+                ),
+              );
             },
             child: Row(
               children: [
