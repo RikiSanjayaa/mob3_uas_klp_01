@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -66,35 +67,37 @@ class _AccountScreenState extends State<AccountScreen> {
       appBar: AppBar(
         title: const Text('My Account'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Stack(children: [
-                const CircleAvatar(
-                  radius: 80,
-                  backgroundImage: AssetImage(
-                      'assets/images/default-user.png'), // Replace with your image asset
-                ),
-                Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        // TODO: implement change profile-image
-                      },
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        radius: 25,
-                        child: Icon(Icons.edit, color: Colors.white),
-                      ),
-                    ))
-              ]),
-              const SizedBox(height: 60),
-              Consumer<UserProvider>(builder: (context, userProvider, child) {
-                return ListTile(
+      body: Consumer<UserProvider>(builder: (context, userProvider, child) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Stack(children: [
+                  CircleAvatar(
+                    radius: 80,
+                    child: SvgPicture.string(
+                      userProvider.profilePict,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          userProvider.updateAvatar();
+                        },
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.blue,
+                          radius: 25,
+                          child: Icon(Icons.edit, color: Colors.white),
+                        ),
+                      ))
+                ]),
+                const SizedBox(height: 60),
+                ListTile(
                   contentPadding: const EdgeInsets.fromLTRB(30, 0, 10, 0),
                   leading: const Icon(
                     Icons.account_circle_rounded,
@@ -117,38 +120,38 @@ class _AccountScreenState extends State<AccountScreen> {
                     onPressed: _editUsername,
                   ),
                   onTap: _editUsername,
-                );
-              }),
-              const Divider(
-                height: 0,
-                endIndent: 20,
-                indent: 80,
-              ),
-              ListTile(
-                contentPadding: const EdgeInsets.fromLTRB(30, 0, 10, 0),
-                leading: const Icon(
-                  Icons.email,
-                  size: 35,
                 ),
-                title: const Text(
-                  "Email",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                const Divider(
+                  height: 0,
+                  endIndent: 20,
+                  indent: 80,
                 ),
-                subtitle: Text(
-                  userProvider.email,
-                  style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600),
+                ListTile(
+                  contentPadding: const EdgeInsets.fromLTRB(30, 0, 10, 0),
+                  leading: const Icon(
+                    Icons.email,
+                    size: 35,
+                  ),
+                  title: const Text(
+                    "Email",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  subtitle: Text(
+                    userProvider.email,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                 ),
-              ),
-              const Divider(
-                height: 0,
-                endIndent: 20,
-                indent: 80,
-              ),
-            ],
+                const Divider(
+                  height: 0,
+                  endIndent: 20,
+                  indent: 80,
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

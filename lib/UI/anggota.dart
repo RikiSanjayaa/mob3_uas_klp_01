@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AnggotaScreen extends StatefulWidget {
   const AnggotaScreen({super.key});
@@ -77,9 +78,9 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
               final user = _users[index];
               return ListTile(
                 leading: CircleAvatar(
-                  child: Image.asset(
-                    'assets/images/letter-p.png',
-                    height: 25,
+                  child: SvgPicture.string(
+                    user['profile-pict'],
+                    fit: BoxFit.cover,
                   ),
                 ),
                 title: Text(user['username']),

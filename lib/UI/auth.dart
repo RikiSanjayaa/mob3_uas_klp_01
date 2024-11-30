@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/components/random_avatar.dart';
+import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -22,6 +25,8 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isAuthenticating = false;
 
   void _submit() async {
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
     final isValid = _form.currentState!.validate();
 
     if (!isValid) {
@@ -42,10 +47,12 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       } else {
         // Sign user up
-        final userCredential = await _firebase.createUserWithEmailAndPassword(
+        final userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _enteredEmail,
           password: _enteredPassword,
         );
+        String svg = getRandomAvatar();
 
         await FirebaseFirestore.instance
             .collection('users')
@@ -54,23 +61,32 @@ class _AuthScreenState extends State<AuthScreen> {
           {
             'username': _enteredUsername,
             'email': _enteredEmail,
-            'profile-picture':
-                null, // TODO: implement add profile picture inside my account page
+            'profile-pict': svg,
             'pinjaman': 0,
             'angsuran': 0, // TODO: implement pinjaman & angsuran
           },
         );
       }
+      // Fetch and set new user data
+      userProvider.setUser();
     } on FirebaseAuthException catch (error) {
-      // if (error.code == 'email-already-in-use') {}
-      if (mounted) {
-        // check if this widget is still in the widget tree
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(error.message ?? 'Authentication failed'),
-          ),
-        );
+      if (error.code == 'email-already-in-use') {
+        if (mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('This email address is already in use.'),
+          ));
+        }
+      } else {
+        if (mounted) {
+          // check if this widget is still in the widget tree
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message ?? 'Authentication failed'),
+            ),
+          );
+        }
       }
       setState(() {
         _isAuthenticating = false;

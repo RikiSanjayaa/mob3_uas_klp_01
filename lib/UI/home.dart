@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mob3_uas_klp_01/UI/account.dart';
 import 'package:mob3_uas_klp_01/UI/anggota.dart';
 import 'package:mob3_uas_klp_01/UI/angsuran.dart';
@@ -23,6 +24,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    // add listener to page controller
+    _pageController.addListener(() {
+      int nextPage = _pageController.page!.round();
+      if (nextPage != _selectedIndex) {
+        setState(() {
+          _selectedIndex = nextPage;
+        });
+      }
+    });
   }
 
   void _onItemTapped(int index) {
@@ -67,15 +77,19 @@ class _HomeScreenState extends State<HomeScreen> {
               return Row(
                 children: [
                   CircleAvatar(
-                    child: Image.asset(
-                      'assets/images/default-user.png',
+                    child: SvgPicture.string(
+                      userProvider.profilePict,
+                      fit: BoxFit.cover,
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    userProvider.username,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 20),
+                  Flexible(
+                    child: Text(
+                      userProvider.username,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 20),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               );
@@ -89,8 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.exit_to_app,
               color: Theme.of(context).colorScheme.primary,
             ),
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              userProvider.logUserOut();
             },
           ),
         ],

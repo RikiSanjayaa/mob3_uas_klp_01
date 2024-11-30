@@ -38,6 +38,8 @@ dependencies:
   cloud_firestore: ^5.5.0
   firebase_auth: ^5.3.3
   provider: ^6.1.2
+  random_avatar: ^0.0.8
+  flutter_svg: ^2.0.16
 
 dev_dependencies:
   flutter_test:
