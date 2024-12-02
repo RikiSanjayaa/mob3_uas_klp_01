@@ -5,7 +5,7 @@ import 'package:mob3_uas_klp_01/UI/account.dart';
 import 'package:mob3_uas_klp_01/UI/anggota.dart';
 import 'package:mob3_uas_klp_01/UI/angsuran.dart';
 import 'package:mob3_uas_klp_01/UI/dashboard.dart';
-import 'package:mob3_uas_klp_01/UI/friendRequests.dart';
+import 'package:mob3_uas_klp_01/UI/friend_requests.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mob3_uas_klp_01/provider/friends_provider.dart';
+import 'package:provider/provider.dart';
 
 class AnggotaScreen extends StatefulWidget {
   const AnggotaScreen({super.key});
@@ -11,73 +11,13 @@ class AnggotaScreen extends StatefulWidget {
 }
 
 class _AnggotaScreenState extends State<AnggotaScreen> {
-  List<DocumentSnapshot> _allUsers = [];
-  List<DocumentSnapshot> _friends = [];
-  List<DocumentSnapshot> _otherUsers = [];
-  bool _isLoading = true;
   bool _showFriends = false;
 
   @override
-  void initState() {
-    super.initState();
-    _fetchAnggota();
-  }
-
-  Future<void> _fetchAnggota() async {
-    try {
-      // fetch all users
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final userQuerySnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('email', isNotEqualTo: user.email)
-            .get();
-        _allUsers = userQuerySnapshot.docs;
-
-        //fetch friends
-        final friendsSnapshot = await FirebaseFirestore.instance
-            .collection('friends')
-            .where('user1', isEqualTo: user.uid)
-            .get();
-        final friendIds =
-            friendsSnapshot.docs.map((doc) => doc['user2']).toList();
-
-        // filter friends and other users
-        _friends =
-            _allUsers.where((user) => friendIds.contains(user.id)).toList();
-        _otherUsers =
-            _allUsers.where((user) => !friendIds.contains(user.id)).toList();
-
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('Failed to fetch users: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _sendFriendRequest(String friendId) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('friend_requests').add({
-        'from': user.uid,
-        'to': friendId,
-        'status': 'pending',
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      setState(() {
-        _otherUsers.removeWhere((user) => user.id == friendId);
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return _isLoading
+    final friendsProvider = Provider.of<FriendsProvider>(context);
+
+    return friendsProvider.isLoading
         ? const Center(child: CircularProgressIndicator())
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,11 +78,13 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount:
-                      _showFriends ? _friends.length : _otherUsers.length,
+                  itemCount: _showFriends
+                      ? friendsProvider.friends.length
+                      : friendsProvider.otherUsers.length,
                   itemBuilder: (context, index) {
-                    final user =
-                        _showFriends ? _friends[index] : _otherUsers[index];
+                    final user = _showFriends
+                        ? friendsProvider.friends[index]
+                        : friendsProvider.otherUsers[index];
                     return ListTile(
                       leading: CircleAvatar(
                         child: SvgPicture.string(
@@ -156,7 +98,7 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                           ? null
                           : IconButton(
                               onPressed: () {
-                                _sendFriendRequest(user.id);
+                                friendsProvider.sendFriendRequest(user.id);
                               },
                               icon: const Icon(Icons.add),
                             ),
