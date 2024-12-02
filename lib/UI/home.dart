@@ -5,6 +5,7 @@ import 'package:mob3_uas_klp_01/UI/account.dart';
 import 'package:mob3_uas_klp_01/UI/anggota.dart';
 import 'package:mob3_uas_klp_01/UI/angsuran.dart';
 import 'package:mob3_uas_klp_01/UI/dashboard.dart';
+import 'package:mob3_uas_klp_01/UI/friendRequests.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -98,6 +99,29 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const FriendRequestsScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0.0, 1.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
+
+                      return SlideTransition(
+                          position: offsetAnimation, child: child);
+                    },
+                  ),
+                );
+              },
+              icon: const Icon(Icons.notifications)),
           IconButton(
             icon: Icon(
               Icons.exit_to_app,
