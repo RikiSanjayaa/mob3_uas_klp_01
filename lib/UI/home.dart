@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: const Color.fromARGB(255, 39, 22, 170),
+        selectedItemColor: Colors.deepPurple,
         selectedIconTheme: const IconThemeData(size: 35),
         unselectedItemColor: Theme.of(context).colorScheme.secondary,
       ),
