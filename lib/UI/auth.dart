@@ -22,6 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _enteredPassword = '';
   String _enteredUsername = '';
   bool _rememberMe = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -201,7 +202,20 @@ class _AuthScreenState extends State<AuthScreen> {
                               CustomTextFormField(
                                 controller: _passwordController,
                                 labelText: "Password",
-                                obscureText: true,
+                                obscureText: _obscurePassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
                                 validator: (value) {
                                   if (value == null ||
                                       value.trim().isEmpty ||
