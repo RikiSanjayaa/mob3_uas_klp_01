@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mob3_uas_klp_01/UI/account.dart';
-import 'package:mob3_uas_klp_01/UI/anggota.dart';
-import 'package:mob3_uas_klp_01/UI/angsuran.dart';
-import 'package:mob3_uas_klp_01/UI/dashboard.dart';
-import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import '/UI/account.dart';
+import '/UI/anggota.dart';
+import '/UI/angsuran.dart';
+import '/UI/dashboard.dart';
+import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,9 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 200,
+        // backgroundColor: Colors.deepPurple,
+        toolbarHeight: 55,
+        leadingWidth: double.infinity,
         leading: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 0, 0, 0),
+          padding: const EdgeInsets.only(left: 30),
           child: GestureDetector(
             onTap: () {
               Navigator.of(context).push(
@@ -82,21 +84,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      userProvider.username,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 20),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  const SizedBox(width: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Hello!"),
+                      Flexible(
+                        child: Text(
+                          userProvider.username,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 20),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );
             }),
           ),
         ),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(
@@ -136,15 +144,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: PageView(
         controller: _pageController,
-        children: const [
+        children: [
           // page anggota
-          AnggotaScreen(),
+          const AnggotaScreen(),
 
           // home page/dashboard
-          Dashboard(),
+          Dashboard(pageController: _pageController),
 
           //  page angsuran
-          AngsuranScreen(),
+          const AngsuranScreen(),
         ],
       ),
     );

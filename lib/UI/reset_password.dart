@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
-import 'package:mob3_uas_klp_01/components/custom_snackbar.dart';
-import 'package:mob3_uas_klp_01/components/custom_textform.dart';
+import '/components/custom_elevated_btn.dart';
+import '/components/custom_snackbar.dart';
+import '/components/custom_textform.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});

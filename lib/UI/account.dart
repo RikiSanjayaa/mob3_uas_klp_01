@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
-import 'package:mob3_uas_klp_01/components/custom_textform.dart';
-import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import '/components/custom_elevated_btn.dart';
+import '/components/custom_textform.dart';
+import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AccountScreen extends StatefulWidget {

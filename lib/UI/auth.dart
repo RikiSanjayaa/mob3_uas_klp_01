@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mob3_uas_klp_01/UI/reset_password.dart';
-import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
-import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import '/UI/reset_password.dart';
+import '/components/custom_elevated_btn.dart';
+import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import '/backend/auth_backend.dart';
 import '/components/custom_outline_btn.dart';

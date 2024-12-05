@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mob3_uas_klp_01/backend/random_avatar.dart';
+import '/backend/random_avatar.dart';
 
 class UserProvider extends ChangeNotifier {
   String _username = '';
