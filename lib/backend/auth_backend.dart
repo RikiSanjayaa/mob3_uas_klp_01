@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mob3_uas_klp_01/components/random_avatar.dart';
-import 'package:mob3_uas_klp_01/provider/user_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/components/custom_snackbar.dart';
 
 final firebaseAuth = FirebaseAuth.instance;
@@ -14,6 +13,7 @@ Future<void> signInWithGoogle({
   required BuildContext context,
   required ScaffoldMessengerState scaffoldMessenger,
   required Function(bool) setAuthenticating,
+  required Function() updateUserProvider,
 }) async {
   try {
     setAuthenticating(true);
@@ -31,10 +31,7 @@ Future<void> signInWithGoogle({
       idToken: googleAuth.idToken,
     );
 
-    final userCredential =
-        await firebaseAuth.signInWithCredential(credential).then((value) {
-      Provider.of<UserProvider>(context, listen: false).setUser();
-    });
+    final userCredential = await firebaseAuth.signInWithCredential(credential);
 
     // Check if the user already exists in Firestore
     final userDoc = await FirebaseFirestore.instance
@@ -71,6 +68,7 @@ Future<void> signInWithGoogle({
     );
   } finally {
     setAuthenticating(false);
+    updateUserProvider();
   }
 }
 
@@ -84,8 +82,7 @@ Future<void> loginOrRegister({
   required Function(bool) setAuthenticating,
   required Function(bool) setIsLogin,
   required Function() updateUserProvider,
-  // TODO: Implement rememberMe functionality
-  // required bool rememberMe,
+  required bool rememberMe,
 }) async {
   try {
     setAuthenticating(true);
@@ -96,14 +93,10 @@ Future<void> loginOrRegister({
         scaffoldMessenger.showSnackBar(const CustomSnackBar(
             content: Text("User already logged in"), color: Colors.red));
       } else {
-        await firebaseAuth
-            .signInWithEmailAndPassword(
+        await firebaseAuth.signInWithEmailAndPassword(
           email: enteredEmail,
           password: enteredPassword,
-        )
-            .then((value) {
-          Provider.of<UserProvider>(context, listen: false).setUser();
-        });
+        );
 
         scaffoldMessenger.clearSnackBars();
         scaffoldMessenger.showSnackBar(const CustomSnackBar(
@@ -173,5 +166,27 @@ Future<void> loginOrRegister({
     }
   } finally {
     setAuthenticating(false);
+    updateUserProvider();
+    final prefs = await SharedPreferences.getInstance();
+    if (rememberMe) {
+      prefs.setBool('remember_me', true);
+      prefs.setString('email', enteredEmail);
+      prefs.setString('password', enteredPassword);
+    } else {
+      prefs.setBool('remember_me', false);
+      prefs.remove('email');
+      prefs.remove('password');
+    }
   }
+}
+
+Future<Map<String, String>> loadCredentials() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bool? rememberMe = prefs.getBool('remember_me');
+  if (rememberMe == true) {
+    final String? email = prefs.getString('email');
+    final String? password = prefs.getString('password');
+    return {'email': email!, 'password': password!};
+  }
+  return {'email': '', 'password': ''};
 }

@@ -14,12 +14,31 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _form = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isLogin = true;
   bool _isAuthenticating = false;
   String _enteredEmail = '';
   String _enteredPassword = '';
   String _enteredUsername = '';
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCredentials();
+  }
+
+  Future<void> _loadCredentials() async {
+    final credentials = await loadCredentials();
+    if (credentials['email'] != '' && credentials['password'] != '') {
+      setState(() {
+        _emailController.text = credentials['email']!;
+        _passwordController.text = credentials['password']!;
+        _rememberMe = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +131,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                         });
                                       }
                                     },
+                                    updateUserProvider: () {
+                                      userProvider.setUser();
+                                    },
                                   );
                                 },
                                 leadingImageAssetsPath:
@@ -143,6 +165,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               const SizedBox(height: 20),
                               CustomTextFormField(
+                                controller: _emailController,
                                 labelText: 'Email address',
                                 keyboardType: TextInputType.emailAddress,
                                 textCapitalization: TextCapitalization.none,
@@ -176,6 +199,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                 ),
                               const SizedBox(height: 10),
                               CustomTextFormField(
+                                controller: _passwordController,
                                 labelText: "Password",
                                 obscureText: true,
                                 validator: (value) {
@@ -229,15 +253,13 @@ class _AuthScreenState extends State<AuthScreen> {
                                   width: double.infinity,
                                   child: ElevatedButton(
                                     onPressed: () {
+                                      // validat form
                                       final isValid =
                                           _form.currentState!.validate();
-
                                       if (!isValid) {
                                         return;
                                       }
-
                                       _form.currentState!.save();
-
                                       loginOrRegister(
                                           context: context,
                                           scaffoldMessenger:
@@ -246,6 +268,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           enteredEmail: _enteredEmail,
                                           enteredPassword: _enteredPassword,
                                           enteredUsername: _enteredUsername,
+                                          rememberMe: _rememberMe,
                                           setAuthenticating: (value) {
                                             if (context.mounted) {
                                               setState(() {
