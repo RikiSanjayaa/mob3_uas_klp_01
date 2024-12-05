@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mob3_uas_klp_01/components/random_avatar.dart';
+import 'package:mob3_uas_klp_01/backend/random_avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/components/custom_snackbar.dart';
 
