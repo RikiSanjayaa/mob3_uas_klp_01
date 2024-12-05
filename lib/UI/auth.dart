@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import '/backend/auth_backend.dart';
@@ -16,6 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _form = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
   bool _isLogin = true;
   bool _isAuthenticating = false;
   String _enteredEmail = '';
@@ -185,6 +187,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (!_isLogin) const SizedBox(height: 10),
                               if (!_isLogin)
                                 CustomTextFormField(
+                                  controller: _usernameController,
                                   labelText: "Username",
                                   validator: (value) {
                                     if (value == null ||
@@ -263,56 +266,48 @@ class _AuthScreenState extends State<AuthScreen> {
                               if (_isAuthenticating)
                                 const CircularProgressIndicator(),
                               if (!_isAuthenticating)
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // validat form
-                                      final isValid =
-                                          _form.currentState!.validate();
-                                      if (!isValid) {
-                                        return;
-                                      }
-                                      _form.currentState!.save();
-                                      loginOrRegister(
-                                          context: context,
-                                          scaffoldMessenger:
-                                              ScaffoldMessenger.of(context),
-                                          isLogin: _isLogin,
-                                          enteredEmail: _enteredEmail,
-                                          enteredPassword: _enteredPassword,
-                                          enteredUsername: _enteredUsername,
-                                          rememberMe: _rememberMe,
-                                          setAuthenticating: (value) {
-                                            if (context.mounted) {
-                                              setState(() {
-                                                _isAuthenticating = value;
-                                              });
-                                            }
-                                          },
-                                          setIsLogin: (value) {
-                                            if (context.mounted) {
-                                              setState(() {
-                                                _isLogin = value;
-                                              });
-                                            }
-                                          },
-                                          updateUserProvider: () {
-                                            userProvider.setUser();
-                                          });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      backgroundColor: Colors.deepPurple,
-                                    ),
-                                    child: Text(
-                                      _isLogin ? 'Login' : 'Sign Up',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                                CustomElevatedBtn(
+                                  onPressed: () {
+                                    // validate form
+                                    final isValid =
+                                        _form.currentState!.validate();
+                                    if (!isValid) {
+                                      return;
+                                    }
+                                    _form.currentState!.save();
+                                    // call login or register
+                                    loginOrRegister(
+                                        context: context,
+                                        scaffoldMessenger:
+                                            ScaffoldMessenger.of(context),
+                                        isLogin: _isLogin,
+                                        enteredEmail: _enteredEmail,
+                                        enteredPassword: _enteredPassword,
+                                        enteredUsername: _enteredUsername,
+                                        rememberMe: _rememberMe,
+                                        setAuthenticating: (value) {
+                                          if (context.mounted) {
+                                            setState(() {
+                                              _isAuthenticating = value;
+                                            });
+                                          }
+                                        },
+                                        setIsLogin: (value) {
+                                          if (context.mounted) {
+                                            setState(() {
+                                              _isLogin = value;
+                                            });
+                                          }
+                                        },
+                                        updateUserProvider: () {
+                                          userProvider.setUser();
+                                        });
+                                  },
+                                  child: Text(
+                                    _isLogin ? 'Login' : 'Sign Up',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
