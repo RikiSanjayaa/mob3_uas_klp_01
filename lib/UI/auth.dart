@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/UI/reset_password.dart';
 import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -251,7 +252,14 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      // TODO: Handle forgot password
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return const ResetPasswordScreen();
+                                          },
+                                        ),
+                                      );
                                     },
                                     child: const Text(
                                       'Forgot Password?',

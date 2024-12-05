@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mob3_uas_klp_01/components/custom_elevated_btn.dart';
+import 'package:mob3_uas_klp_01/components/custom_textform.dart';
 import 'package:mob3_uas_klp_01/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -32,30 +34,45 @@ class _AccountScreenState extends State<AccountScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Username'),
-          content: TextField(
-            controller: _usernameController,
-            decoration: const InputDecoration(
-              labelText: 'Username',
-              border: OutlineInputBorder(),
+          content: SizedBox(
+            height: 180,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Edit Username",
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.close),
+                    )
+                  ],
+                ),
+                CustomTextFormField(
+                  controller: _usernameController,
+                  labelText: '',
+                ),
+                CustomElevatedBtn(
+                  onPressed: () async {
+                    final newUsername = _usernameController.text;
+                    userProvider.setUsername(newUsername);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final newUsername = _usernameController.text;
-                userProvider.setUsername(newUsername);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Save'),
-            ),
-          ],
         );
       },
     );
