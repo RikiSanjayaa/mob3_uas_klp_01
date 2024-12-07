@@ -3,14 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '/backend/random_avatar.dart';
 
-class UserProvider extends ChangeNotifier {
+class UserProvider with ChangeNotifier {
   String _username = '';
   String _email = '';
   String _profilePict = '';
+  List<DocumentSnapshot> _otherUsers = [];
+  bool _isLoading = false;
 
   String get username => _username;
   String get email => _email;
   String get profilePict => _profilePict;
+  List<DocumentSnapshot> get otherUsers => _otherUsers;
+  bool get isLoading => _isLoading;
 
   UserProvider() {
     setUser();
@@ -60,5 +64,21 @@ class UserProvider extends ChangeNotifier {
       _profilePict = newProfilePict;
       notifyListeners();
     }
+  }
+
+  Future<void> fetchOtherUsers() async {
+    _isLoading = true;
+    notifyListeners();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userQuerySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isNotEqualTo: user.email)
+          .get();
+      _otherUsers = userQuerySnapshot.docs;
+    }
+
+    _isLoading = false;
+    notifyListeners();
   }
 }

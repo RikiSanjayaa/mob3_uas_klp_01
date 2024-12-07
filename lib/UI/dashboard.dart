@@ -263,17 +263,24 @@ class _DashboardState extends State<Dashboard> {
               ),
             ],
           ),
-          Row(
+          Stack(
             children: [
-              Text(
-                '${(progressAngsuran * 100).toInt()}%',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+              Positioned(
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
+                child: Center(
+                  child: Text(
+                    '${(progressAngsuran * 100).toInt()}%',
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
               CircularProgressIndicator(
                 value: progressAngsuran,
+                strokeCap: StrokeCap.round,
                 color: color,
                 backgroundColor: color.withOpacity(0.3),
               ),

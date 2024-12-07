@@ -36,6 +36,7 @@ migrate_working_dir/
 firebase.json
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist
+devtools_options.yaml
 
 # Firebase configuration files
 firestore.rules
