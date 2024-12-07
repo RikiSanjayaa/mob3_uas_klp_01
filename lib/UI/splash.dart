@@ -7,7 +7,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pinjol'),
+        title: const Text('PinjamDulu'),
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mob3_uas_klp_01/provider/user_provider.dart';
+import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
 class AnggotaScreen extends StatefulWidget {
