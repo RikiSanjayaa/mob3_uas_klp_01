@@ -48,7 +48,8 @@ Future<void> signInWithGoogle({
         {
           'username': googleUser.displayName,
           'email': googleUser.email,
-          'profile-pict': getRandomAvatar()
+          'profile-pict': getRandomAvatar(),
+          'role': 'user' // default
         },
       );
     }
@@ -124,7 +125,8 @@ Future<void> loginOrRegister({
           {
             'username': enteredUsername,
             'email': enteredEmail,
-            'profile-pict': getRandomAvatar()
+            'profile-pict': getRandomAvatar(),
+            'role': 'user' // default
           },
         );
 

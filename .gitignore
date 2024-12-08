@@ -32,8 +32,8 @@ migrate_working_dir/
 /build/
 **/build/
 **/ios/Flutter/Flutter.framework/
-/lib/firebase_options.dart
-firebase.json
+/lib/firebase_options*
+firebase*.json
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist
 devtools_options.yaml

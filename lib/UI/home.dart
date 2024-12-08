@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '/UI/admin_dashboard.dart';
 import '/UI/account.dart';
 import '/UI/anggota.dart';
 import '/UI/angsuran.dart';
@@ -45,38 +46,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: Colors.deepPurple,
-        toolbarHeight: 55,
-        leadingWidth: double.infinity,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 30),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const AccountScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
-                    const end = Offset.zero;
-                    const curve = Curves.ease;
+    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+      return Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 55,
+          leadingWidth: double.infinity,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 30),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const AccountScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0.0, 1.0);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
 
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-                    var offsetAnimation = animation.drive(tween);
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      var offsetAnimation = animation.drive(tween);
 
-                    return SlideTransition(
-                        position: offsetAnimation, child: child);
-                  },
-                ),
-              );
-            },
-            child:
-                Consumer<UserProvider>(builder: (context, userProvider, child) {
-              return Row(
+                      return SlideTransition(
+                          position: offsetAnimation, child: child);
+                    },
+                  ),
+                );
+              },
+              child: Row(
                 children: [
                   CircleAvatar(
                     child: SvgPicture.string(
@@ -101,60 +100,63 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ],
-              );
-            }),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.exit_to_app,
-              color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              userProvider.logUserOut();
-            },
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        showUnselectedLabels: false,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_alt),
-            label: "Anggota",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Dashboard",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard),
-            label: "Angsuran",
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.deepPurple,
-        selectedIconTheme: const IconThemeData(size: 35),
-        unselectedItemColor: Theme.of(context).colorScheme.secondary,
-      ),
-      body: PageView(
-        controller: _pageController,
-        children: [
-          // page anggota
-          const AnggotaScreen(),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                userProvider.logUserOut();
+              },
+            ),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          showUnselectedLabels: false,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_alt),
+              label: "Anggota",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Dashboard",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.leaderboard),
+              label: "Angsuran",
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: Colors.deepPurple,
+          selectedIconTheme: const IconThemeData(size: 35),
+          unselectedItemColor: Theme.of(context).colorScheme.secondary,
+        ),
+        body: PageView(
+          controller: _pageController,
+          children: [
+            // page anggota
+            const AnggotaScreen(),
 
-          // home page/dashboard
-          Dashboard(pageController: _pageController),
+            // home page/dashboard
+            if (userProvider.role == 'administrator') const AdminDashboard(),
 
-          //  page angsuran
-          const AngsuranScreen(),
-        ],
-      ),
-    );
+            if (userProvider.role == 'user')
+              Dashboard(pageController: _pageController),
+
+            //  page angsuran
+            const AngsuranScreen(),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -17,8 +17,11 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<UserProvider>(context, listen: false).fetchOtherUsers());
+    Future.microtask(() {
+      if (mounted) {
+        Provider.of<UserProvider>(context, listen: false).fetchOtherUsers();
+      }
+    });
   }
 
   @override
@@ -40,28 +43,7 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              width: double.infinity,
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.deepPurple,
-              ),
-              child: const Center(
-                child: Text(
-                  "Cari Anggota Lainnya",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: TextField(
                 decoration: const InputDecoration(
                   hintText: 'Search User by Email',
@@ -91,7 +73,13 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                         ),
                         title: Text(user['username']),
                         subtitle: Text(user['email']),
-                        // TODO: implement a view user detail trailing button only for administrator
+                        trailing: userProvider.role == 'administrator'
+                            ? IconButton(
+                                onPressed: () {
+                                  // TODO: navigator push view user detail here
+                                },
+                                icon: const Icon(Icons.search))
+                            : null,
                       );
                     }),
           ),

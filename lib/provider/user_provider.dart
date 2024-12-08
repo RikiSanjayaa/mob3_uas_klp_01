@@ -7,12 +7,14 @@ class UserProvider with ChangeNotifier {
   String _username = '';
   String _email = '';
   String _profilePict = '';
+  String _role = '';
   List<DocumentSnapshot> _otherUsers = [];
   bool _isLoading = false;
 
   String get username => _username;
   String get email => _email;
   String get profilePict => _profilePict;
+  String get role => _role;
   List<DocumentSnapshot> get otherUsers => _otherUsers;
   bool get isLoading => _isLoading;
 
@@ -30,6 +32,7 @@ class UserProvider with ChangeNotifier {
       _username = userDoc['username'];
       _profilePict = userDoc['profile-pict'];
       _email = authenticatedUser.email!;
+      _role = userDoc['role'];
       notifyListeners();
     }
   }
@@ -38,6 +41,7 @@ class UserProvider with ChangeNotifier {
     _username = '';
     _email = '';
     _profilePict = '';
+    _role = '';
     notifyListeners();
   }
 
