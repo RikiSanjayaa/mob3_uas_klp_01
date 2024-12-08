@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '/UI/admin_dashboard.dart';
+import '/UI/admin/admin_statistics.dart';
+import 'admin/admin_dashboard.dart';
 import '/UI/account.dart';
 import '/UI/anggota.dart';
-import '/UI/angsuran.dart';
-import '/UI/dashboard.dart';
+import 'user/pinjaman.dart';
+import 'user/dashboard.dart';
 import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -120,18 +121,20 @@ class _HomeScreenState extends State<HomeScreen> {
           showUnselectedLabels: false,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
           backgroundColor: Theme.of(context).colorScheme.surface,
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.people_alt),
               label: "Anggota",
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: "Dashboard",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.leaderboard),
-              label: "Angsuran",
+              icon: const Icon(Icons.leaderboard),
+              label: userProvider.role == 'administrator'
+                  ? "Statistics"
+                  : "Pinjaman",
             ),
           ],
           currentIndex: _selectedIndex,
@@ -147,13 +150,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const AnggotaScreen(),
 
             // home page/dashboard
-            if (userProvider.role == 'administrator') const AdminDashboard(),
+            userProvider.role == 'administrator'
+                ? const AdminDashboard()
+                : const Dashboard(),
 
-            if (userProvider.role == 'user')
-              Dashboard(pageController: _pageController),
-
-            //  page angsuran
-            const AngsuranScreen(),
+            //  page pinjaman
+            userProvider.role == 'administrator'
+                ? const AdminStatistics()
+                : const PinjamanScreen(),
           ],
         ),
       );

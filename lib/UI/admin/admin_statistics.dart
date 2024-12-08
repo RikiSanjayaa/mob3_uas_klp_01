@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class AngsuranScreen extends StatelessWidget {
-  const AngsuranScreen({super.key});
+class AdminStatistics extends StatelessWidget {
+  const AdminStatistics({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text("ini page Angsuran"),
+      child: Text("Statistics here"),
     );
   }
 }

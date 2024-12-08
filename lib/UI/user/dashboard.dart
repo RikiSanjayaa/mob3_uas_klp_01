@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-// import '/components/custom_elevated_btn.dart';
-// import '/provider/user_provider.dart';
-// import 'package:provider/provider.dart';
+import '/components/custom_container.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key, required this.pageController});
-  final PageController pageController;
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -23,12 +20,8 @@ class _DashboardState extends State<Dashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Task Progress Section
-            Container(
+            CustomContainer(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple,
-                borderRadius: BorderRadius.circular(16),
-              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -69,9 +62,7 @@ class _DashboardState extends State<Dashboard> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
-                          widget.pageController.animateToPage(2,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut);
+                          // navigate to bayar angsuran
                         },
                         child: const Text("Bayar Angsuran"),
                       ),
@@ -130,7 +121,7 @@ class _DashboardState extends State<Dashboard> {
                   progress: 0.3,
                 ),
                 _buildTaskCard(
-                  title: 'Total Angsuran',
+                  title: 'Angsuran Terbayar',
                   subtitle: 'Rp 2.550.000',
                   color: Colors.orange,
                   progress: progressAngsuran,
