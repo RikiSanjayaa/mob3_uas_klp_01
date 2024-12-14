@@ -42,6 +42,7 @@ dependencies:
   flutter_svg: ^2.0.16
   google_sign_in: ^6.2.2
   shared_preferences: ^2.3.3
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:

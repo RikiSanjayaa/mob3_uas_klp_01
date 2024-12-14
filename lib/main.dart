@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import '/provider/pinjaman_provider.dart';
 import 'package:provider/provider.dart';
 import 'provider/user_provider.dart';
 import 'UI/auth.dart';
@@ -17,6 +18,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => PinjamanProvider()),
       ],
       child: const MyApp(),
     ),
