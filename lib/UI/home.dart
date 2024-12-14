@@ -5,8 +5,8 @@ import '/UI/admin/admin_statistics.dart';
 import 'admin/admin_dashboard.dart';
 import '/UI/account.dart';
 import '/UI/anggota.dart';
-import 'user/pinjaman.dart';
-import 'user/dashboard.dart';
+import 'nasabah/pinjaman.dart';
+import 'nasabah/dashboard.dart';
 import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 

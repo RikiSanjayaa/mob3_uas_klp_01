@@ -39,7 +39,7 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
     }).toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
       child: Column(
         children: [
           Padding(
