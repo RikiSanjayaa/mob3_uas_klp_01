@@ -65,6 +65,8 @@ class PinjamanProvider with ChangeNotifier {
           _persentasePinjaman = (ratioPinjaman! * 100).toInt();
         } else {
           _pinjaman = null;
+          _ratioPinjaman = 0;
+          _persentasePinjaman = 0;
         }
       }
     } catch (e) {
@@ -100,6 +102,8 @@ class PinjamanProvider with ChangeNotifier {
           _persentaseAngsuran = (_ratioAngsuran! * 100).toInt();
         } else {
           _currentAngsuran = null;
+          _ratioAngsuran = 0;
+          _persentaseAngsuran = 0;
         }
       }
     } catch (e) {
@@ -136,10 +140,11 @@ class PinjamanProvider with ChangeNotifier {
           'angsuran-ke': angsuranKe,
           'lama-angsuran': pinjamanData['lama-angsuran'],
           'status': 'pending',
+          'tgl-lunas': '-'
         });
 
-        fetchPinjaman(); // Refresh the pinjaman list
-        fetchAngsuran();
+        await fetchPinjaman(); // Refresh the pinjaman list
+        await fetchAngsuran();
       }
     } catch (e) {
       _errorMessage = 'Failed to add pinjaman: $e';
@@ -163,6 +168,60 @@ class PinjamanProvider with ChangeNotifier {
       _errorMessage = 'Failed to add angsuran: $e';
       print(_errorMessage);
     }
+  }
+
+  Future<void> bayarAngsuran(String angsuranId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // get current angsuran
+        final angsuranSekarang = await FirebaseFirestore.instance
+            .collection('angsuran')
+            .doc(angsuranId)
+            .get();
+
+        if (angsuranSekarang['angsuran-ke'] !=
+            angsuranSekarang['lama-angsuran']) {
+          // add angsuran baru
+          await addAngsuran({
+            'pinjaman-id': angsuranSekarang['pinjaman-id'],
+            'besar-angsuran': angsuranSekarang['besar-angsuran'],
+            'jatuh-tempo': angsuranSekarang['jatuh-tempo']
+                .toDate()
+                .add(const Duration(days: 30)),
+            'angsuran-ke': angsuranSekarang['angsuran-ke'] + 1,
+            'lama-angsuran': angsuranSekarang['lama-angsuran'],
+            'status': 'pending',
+            'tgl-lunas': '-'
+          });
+        } else {
+          // update pinjaman jika lunas
+          await FirebaseFirestore.instance
+              .collection('pinjaman')
+              .doc(angsuranSekarang['pinjaman-id'])
+              .update({'status': 'completed'});
+        }
+        // update angsuran sekarang
+        await FirebaseFirestore.instance
+            .collection('angsuran')
+            .doc(angsuranId)
+            .update({
+          'status': 'completed',
+          'tgl-lunas': DateTime.now(),
+        });
+
+        await fetchPinjaman(); // Refresh the pinjaman list
+        await fetchAngsuran();
+      }
+    } catch (e) {
+      _errorMessage = 'Failed to bayar angsuran: $e';
+      print(_errorMessage);
+    }
+    _isLoading = false;
+    notifyListeners();
   }
 
   void userLogOut() {

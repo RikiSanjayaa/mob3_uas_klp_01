@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mob3_uas_klp_01/UI/nasabah/bayar_angsuran_screen.dart';
 import '/UI/nasabah/ambil_pinjaman_screen.dart';
 import '/backend/date_to_string.dart';
 import '/backend/int_to_rupiah.dart';
@@ -88,7 +89,11 @@ class _DashboardState extends State<Dashboard> {
                               ElevatedButton(
                                 onPressed: punyaPinjaman
                                     ? () {
-                                        // ganti ke bayar angsuran
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return const BayarAngsuranScreen();
+                                        }));
                                       }
                                     : () {
                                         Navigator.push(context,
