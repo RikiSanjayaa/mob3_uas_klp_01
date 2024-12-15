@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import '/backend/date_to_string.dart';
 import '/backend/int_to_rupiah.dart';
 
 class DetailPinjaman extends StatelessWidget {
@@ -24,8 +24,6 @@ class DetailPinjaman extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat('d MMMM yyyy');
-    final String formattedDate = dateFormat.format(tanggal);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -64,7 +62,8 @@ class DetailPinjaman extends StatelessWidget {
                           _buildDetailItem('Angsuran perbulan',
                               doubleToRP(angsuranPerbulan)),
                           const SizedBox(height: 16),
-                          _buildDetailItem('Tanggal Peminjaman', formattedDate),
+                          _buildDetailItem(
+                              'Tanggal Peminjaman', dateToString(tanggal)),
                           // first Column
                         ],
                       ),

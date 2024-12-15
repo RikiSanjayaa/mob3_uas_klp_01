@@ -13,7 +13,7 @@ Future<void> signInWithGoogle({
   required BuildContext context,
   required ScaffoldMessengerState scaffoldMessenger,
   required Function(bool) setAuthenticating,
-  required Function() updateUserProvider,
+  required Function() updateProvider,
 }) async {
   try {
     setAuthenticating(true);
@@ -69,7 +69,7 @@ Future<void> signInWithGoogle({
     );
   } finally {
     setAuthenticating(false);
-    updateUserProvider();
+    updateProvider();
   }
 }
 
@@ -82,7 +82,7 @@ Future<void> loginOrRegister({
   required String enteredUsername,
   required Function(bool) setAuthenticating,
   required Function(bool) setIsLogin,
-  required Function() updateUserProvider,
+  required Function() updateProvider,
   required bool rememberMe,
 }) async {
   try {
@@ -168,7 +168,7 @@ Future<void> loginOrRegister({
     }
   } finally {
     setAuthenticating(false);
-    updateUserProvider();
+    updateProvider();
     final prefs = await SharedPreferences.getInstance();
     if (rememberMe) {
       prefs.setBool('remember_me', true);

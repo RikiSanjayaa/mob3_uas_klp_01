@@ -15,16 +15,6 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   String _searchQuery = '';
 
   @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if (mounted) {
-        Provider.of<UserProvider>(context, listen: false).fetchOtherUsers();
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();

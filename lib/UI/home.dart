@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '/provider/pinjaman_provider.dart';
 import '/UI/admin/admin_statistics.dart';
 import 'admin/admin_dashboard.dart';
 import '/UI/account.dart';
@@ -47,7 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+    return Consumer2<UserProvider, PinjamanProvider>(
+        builder: (context, userProvider, pinjamanProvider, child) {
       return Scaffold(
         appBar: AppBar(
           toolbarHeight: 55,
@@ -113,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 userProvider.logUserOut();
+                pinjamanProvider.userLogOut();
               },
             ),
           ],

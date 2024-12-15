@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '/provider/pinjaman_provider.dart';
 import '/UI/reset_password.dart';
 import '/components/custom_elevated_btn.dart';
 import '/provider/user_provider.dart';
@@ -47,6 +48,8 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final pinjamanProvider =
+        Provider.of<PinjamanProvider>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: [
@@ -135,8 +138,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                         });
                                       }
                                     },
-                                    updateUserProvider: () {
+                                    updateProvider: () {
+                                      pinjamanProvider.fetchAllData();
                                       userProvider.setUser();
+                                      userProvider.fetchOtherUsers();
                                     },
                                   );
                                 },
@@ -307,8 +312,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                             });
                                           }
                                         },
-                                        updateUserProvider: () {
+                                        updateProvider: () {
+                                          pinjamanProvider.fetchAllData();
                                           userProvider.setUser();
+                                          userProvider.fetchOtherUsers();
                                         });
                                   },
                                   child: Text(

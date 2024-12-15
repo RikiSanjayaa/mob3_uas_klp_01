@@ -20,6 +20,7 @@ class UserProvider with ChangeNotifier {
 
   UserProvider() {
     setUser();
+    fetchOtherUsers();
   }
 
   void setUser() async {
