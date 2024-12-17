@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '/backend/my_transaction.dart';
 
 class PinjamanProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -33,6 +34,11 @@ class PinjamanProvider with ChangeNotifier {
   int get persentaseAngsuran => _persentaseAngsuran;
   double? get ratioAngsuran => _ratioAngsuran;
 
+  // transactions
+  List<MyTransaction> _transactions = [];
+
+  List<MyTransaction> get transactions => _transactions;
+
   PinjamanProvider() {
     fetchAllData();
   }
@@ -40,6 +46,50 @@ class PinjamanProvider with ChangeNotifier {
   void fetchAllData() {
     fetchPinjaman();
     fetchAngsuran();
+    fetchTransactions();
+  }
+
+  Future<void> fetchTransactions() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final transactionQuerySnapshot = await FirebaseFirestore.instance
+            .collection('transactions')
+            .where('user-id', isEqualTo: user.uid)
+            .orderBy('date', descending: true)
+            .get();
+        _transactions = transactionQuerySnapshot.docs
+            .map((doc) => MyTransaction.fromFirestore(doc))
+            .toList();
+      }
+    } catch (e) {
+      _errorMessage = 'Failed to fecth transactions: $e';
+      print(_errorMessage);
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> addTransaction(String type, double amount, double ratio) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('transactions').add({
+          'user-id': user.uid,
+          'type': type,
+          'amount': amount,
+          'ratio': ratio,
+          'date': Timestamp.now(),
+        });
+      }
+    } catch (e) {
+      _errorMessage = 'Failed to add transaction: $e';
+      print(_errorMessage);
+    }
   }
 
   Future<void> fetchPinjaman() async {
@@ -143,8 +193,12 @@ class PinjamanProvider with ChangeNotifier {
           'tgl-lunas': '-'
         });
 
+        // add transaction for the new pinjaman
+        await addTransaction('pinjaman', pinjamanData['besar-pinjaman'], 0.0);
+
         await fetchPinjaman(); // Refresh the pinjaman list
         await fetchAngsuran();
+        await fetchTransactions();
       }
     } catch (e) {
       _errorMessage = 'Failed to add pinjaman: $e';
@@ -183,6 +237,13 @@ class PinjamanProvider with ChangeNotifier {
             .doc(angsuranId)
             .get();
 
+        // add transaction for the paid angsuran
+        await addTransaction(
+          'angsuran',
+          angsuranSekarang['besar-angsuran'],
+          (angsuranSekarang['angsuran-ke'] / angsuranSekarang['lama-angsuran']),
+        );
+
         if (angsuranSekarang['angsuran-ke'] !=
             angsuranSekarang['lama-angsuran']) {
           // add angsuran baru
@@ -215,6 +276,7 @@ class PinjamanProvider with ChangeNotifier {
 
         await fetchPinjaman(); // Refresh the pinjaman list
         await fetchAngsuran();
+        await fetchTransactions();
       }
     } catch (e) {
       _errorMessage = 'Failed to bayar angsuran: $e';
@@ -236,6 +298,7 @@ class PinjamanProvider with ChangeNotifier {
     punyaAngsuranAktif = false;
     _currentAngsuran = null;
     _ratioAngsuran = null;
+    _transactions = [];
     notifyListeners();
   }
 }

@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mob3_uas_klp_01/UI/nasabah/bayar_angsuran_screen.dart';
+import 'package:mob3_uas_klp_01/UI/nasabah/transaction_history.dart';
 import '/UI/nasabah/ambil_pinjaman_screen.dart';
 import '/backend/date_to_string.dart';
 import '/backend/int_to_rupiah.dart';
@@ -27,6 +30,8 @@ class _DashboardState extends State<Dashboard> {
         pinjaman = pinjamanProvider.pinjaman;
         angsuran = pinjamanProvider.currentAngsuran;
       }
+      final List<Color> colors = [Colors.purple, Colors.orange, Colors.green];
+      final Random random = Random();
 
       return pinjamanProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -57,7 +62,7 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                               ),
                               Text(
-                                punyaPinjaman
+                                pinjamanProvider.punyaAngsuranAktif
                                     ? doubleToRP(angsuran!['besar-angsuran'])
                                     : "Pinjaman",
                                 style: const TextStyle(
@@ -186,29 +191,45 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _transactionHistory(
-                      title: 'Angsuran ke 8',
-                      date: '25 November 2024',
-                      progressAngsuran: 0.85,
-                      color: Colors.purple,
-                    ),
-                    _transactionHistory(
-                      title: 'Angsuran ke 7',
-                      date: '23 Oktober 2024',
-                      progressAngsuran: 0.70,
-                      color: Colors.green,
-                    ),
-                    _transactionHistory(
-                      title: 'Angsuran ke 6',
-                      date: '20 September 2024',
-                      progressAngsuran: 0.55,
-                      color: Colors.orange,
-                    ),
+                    pinjamanProvider.transactions.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No transaction history found',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.grey),
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: pinjamanProvider.transactions.length < 3
+                                ? pinjamanProvider.transactions.length
+                                : 3,
+                            itemBuilder: (context, index) {
+                              final transaction =
+                                  pinjamanProvider.transactions[index];
+                              final color =
+                                  colors[random.nextInt(colors.length)];
+                              return _transactionHistory(
+                                title: transaction.type == 'pinjaman'
+                                    ? 'Pinjaman'
+                                    : 'Angsuran',
+                                date: dateFormat.format(transaction.date),
+                                progressAngsuran: transaction.type == 'angsuran'
+                                    ? transaction.ratio
+                                    : 1.0,
+                                color: color,
+                              );
+                            },
+                          ),
                     SizedBox(
                       width: double.infinity,
                       child: TextButton(
                         onPressed: () {
-                          // TODO: Open Transaction History page from here
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const TransactionHistoryScreen();
+                          }));
                         },
                         child: const Text(
                           "...",

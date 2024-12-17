@@ -192,9 +192,14 @@ class _PinjamanScreenState extends State<PinjamanScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
-                                        'Rp 0',
-                                        style: TextStyle(
+                                      Text(
+                                        doubleToRP(pinjamanProvider
+                                                    .currentAngsuran![
+                                                'besar-angsuran'] *
+                                            (pinjamanProvider.currentAngsuran![
+                                                    'angsuran-ke'] -
+                                                1)),
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.orange),
@@ -216,7 +221,7 @@ class _PinjamanScreenState extends State<PinjamanScreen> {
                                   const SizedBox(height: 10),
                                   // const SizedBox(height: 8),
                                   LinearProgressIndicator(
-                                    value: 0,
+                                    value: pinjamanProvider.ratioAngsuran,
                                     color: Colors.orange,
                                     backgroundColor:
                                         Colors.orange.withOpacity(0.3),
