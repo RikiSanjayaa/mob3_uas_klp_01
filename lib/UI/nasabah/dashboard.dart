@@ -217,7 +217,7 @@ class _DashboardState extends State<Dashboard> {
                                 date: dateFormat.format(transaction.date),
                                 progressAngsuran: transaction.type == 'angsuran'
                                     ? transaction.ratio
-                                    : 1.0,
+                                    : 0.0,
                                 color: color,
                               );
                             },

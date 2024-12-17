@@ -194,7 +194,8 @@ class PinjamanProvider with ChangeNotifier {
         });
 
         // add transaction for the new pinjaman
-        await addTransaction('pinjaman', pinjamanData['besar-pinjaman'], 0.0);
+        await addTransaction(
+            'pinjaman', pinjamanData['besar-pinjaman'].toDouble(), 0.0);
 
         await fetchPinjaman(); // Refresh the pinjaman list
         await fetchAngsuran();
