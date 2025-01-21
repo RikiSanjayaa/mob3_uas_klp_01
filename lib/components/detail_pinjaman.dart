@@ -44,7 +44,7 @@ class DetailPinjaman extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildDetailItem(
-                              'Besar Pinjaman', intToRP(besarPinjaman)),
+                              'Besar Pinjaman', formatToRP(besarPinjaman)),
                           const SizedBox(height: 16),
                           _buildDetailItem(
                               'Lama Angsuran', "$lamaPinjaman bulan"),
@@ -57,10 +57,10 @@ class DetailPinjaman extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildDetailItem(
-                              'Total Angsuran', doubleToRP(totalAngsuran)),
+                              'Total Angsuran', formatToRP(totalAngsuran)),
                           const SizedBox(height: 16),
                           _buildDetailItem('Angsuran perbulan',
-                              doubleToRP(angsuranPerbulan)),
+                              formatToRP(angsuranPerbulan)),
                           const SizedBox(height: 16),
                           _buildDetailItem(
                               'Tanggal Peminjaman', dateToString(tanggal)),

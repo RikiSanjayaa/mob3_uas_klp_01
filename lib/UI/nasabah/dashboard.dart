@@ -63,7 +63,7 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               Text(
                                 pinjamanProvider.punyaAngsuranAktif
-                                    ? doubleToRP(angsuran!['besar-angsuran'])
+                                    ? formatToRP(angsuran!['besar-angsuran'])
                                     : "Pinjaman",
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -167,13 +167,13 @@ class _DashboardState extends State<Dashboard> {
                         children: [
                           _buildTaskCard(
                             title: 'Total Pinjaman',
-                            subtitle: intToRP(pinjaman!['besar-pinjaman']),
+                            subtitle: formatToRP(pinjaman!['besar-pinjaman']),
                             color: Colors.blue,
                             progress: pinjamanProvider.ratioPinjaman!,
                           ),
                           _buildTaskCard(
                             title: 'Angsuran Terbayar',
-                            subtitle: doubleToRP(angsuran!['besar-angsuran'] *
+                            subtitle: formatToRP(angsuran!['besar-angsuran'] *
                                 (angsuran['angsuran-ke'] - 1)),
                             color: Colors.orange,
                             progress: pinjamanProvider.ratioAngsuran!,

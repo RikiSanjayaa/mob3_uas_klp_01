@@ -56,7 +56,7 @@ class _PinjamanScreenState extends State<PinjamanScreen> {
                               ),
                               Text(
                                 pinjamanProvider.punyaPinjamanAktif
-                                    ? intToRP(pinjaman!['besar-pinjaman'])
+                                    ? formatToRP(pinjaman!['besar-pinjaman'])
                                     : "Ambil Pinjaman!",
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -193,7 +193,7 @@ class _PinjamanScreenState extends State<PinjamanScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        doubleToRP(pinjamanProvider
+                                        formatToRP(pinjamanProvider
                                                     .currentAngsuran![
                                                 'besar-angsuran'] *
                                             (pinjamanProvider.currentAngsuran![
@@ -209,7 +209,7 @@ class _PinjamanScreenState extends State<PinjamanScreen> {
                                         color: Colors.orange,
                                       ),
                                       Text(
-                                        doubleToRP(pinjaman!['total-angsuran']),
+                                        formatToRP(pinjaman!['total-angsuran']),
                                         style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,

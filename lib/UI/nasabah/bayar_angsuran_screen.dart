@@ -78,7 +78,7 @@ class _BayarAngsuranScreenState extends State<BayarAngsuranScreen> {
               const Text("Besar Angsuran:"),
               const SizedBox(height: 10),
               Text(
-                doubleToRP(angsuran!['besar-angsuran']),
+                formatToRP(angsuran!['besar-angsuran']),
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
