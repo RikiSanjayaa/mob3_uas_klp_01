@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mob3_uas_klp_01/UI/nasabah/inactive_account_screen.dart';
 import '/provider/pinjaman_provider.dart';
 import '/UI/admin/admin_statistics.dart';
 import 'admin/admin_dashboard.dart';
@@ -50,6 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer2<UserProvider, PinjamanProvider>(
         builder: (context, userProvider, pinjamanProvider, child) {
+      if (!userProvider.isActive) {
+        return const InactiveAccountScreen();
+      }
       return Scaffold(
         appBar: AppBar(
           toolbarHeight: 55,

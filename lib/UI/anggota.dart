@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:mob3_uas_klp_01/backend/int_to_rupiah.dart';
 import '/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +21,103 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void showUserDetailsDialog(BuildContext context, String userId) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return FutureBuilder(
+              future: userProvider.fetchUserDetails(userId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(
+                      child: Text('Error fetching user details'));
+                } else if (!snapshot.hasData ||
+                    snapshot.data!['user'] == null) {
+                  return const Center(child: Text('No user details found'));
+                } else {
+                  final userDetails = snapshot.data!;
+                  final user = userDetails['user'];
+                  final pinjaman = userDetails['pinjaman'];
+                  final angsuran = userDetails['angsuran'];
+                  final DateFormat dateFormat = DateFormat('d MMMM yyyy');
+
+                  return AlertDialog(
+                    title: Row(children: [
+                      CircleAvatar(
+                        child: SvgPicture.string(
+                          user['profile-pict'],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Text(user['username']),
+                    ]),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: [
+                          Text('Email: ${user['email']}'),
+                          Text(
+                              'Account Status: ${user['isActive'] ? 'Active' : 'Inactive'}'),
+                          const SizedBox(height: 16),
+                          if (pinjaman != null) ...[
+                            const Text('Active Pinjaman:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                                'Besar Pinjaman: ${formatToRP(pinjaman['besar-pinjaman'])}'),
+                            Text(
+                                'Lama pinjaman: ${pinjaman['lama-angsuran']} bulan'),
+                            Text('Besar bunga: ${pinjaman['besar-bunga']}%'),
+                            Text(
+                                'Lunas: ${formatToRP(pinjaman['total-angsuran'])}'),
+                            Text(
+                                'Angsuran perbulan: ${formatToRP(pinjaman['angsuran-perbulan'])}'),
+                            Text(
+                                'Tanggal meminjam: ${dateFormat.format((pinjaman['tanggal-peminjaman'] as Timestamp).toDate())}'),
+                            const SizedBox(height: 16),
+                          ],
+                          if (angsuran != null) ...[
+                            const Text('Active Angsuran:',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(
+                                'Besar angsuran: ${formatToRP(angsuran['besar-angsuran'])}'),
+                            Text('Angsuran ke: ${angsuran['angsuran-ke']}'),
+                            Text(
+                                'Jatuh tempo tanggal: ${dateFormat.format((angsuran['jatuh-tempo'] as Timestamp).toDate())}'),
+                            const SizedBox(height: 16),
+                          ],
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Close'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await userProvider.toggleAccountStatus(
+                              userId, user['isActive']);
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Text(user['isActive']
+                            ? 'Deactivate Account'
+                            : 'Activate Account'),
+                      ),
+                    ],
+                  );
+                }
+              });
+        });
   }
 
   @override
@@ -67,6 +167,7 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                             ? IconButton(
                                 onPressed: () {
                                   // TODO: navigator push view user detail here
+                                  showUserDetailsDialog(context, user.id);
                                 },
                                 icon: const Icon(Icons.search))
                             : null,
