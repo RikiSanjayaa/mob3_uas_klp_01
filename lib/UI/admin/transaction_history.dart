@@ -15,19 +15,34 @@ class _TransactionHistoryState extends State<TransactionHistory> {
   List<Map<String, dynamic>> transactions = [];
   List<Map<String, dynamic>> filteredTransactions = [];
   bool isLoading = true;
+  bool isLoadingMore = false;
+  DocumentSnapshot? lastDocument;
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
+  final ScrollController _scrollController = ScrollController();
+  final int _itemsPerPage = 6;
 
   @override
   void initState() {
     super.initState();
     fetchTransactions();
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      if (!isLoadingMore && lastDocument != null) {
+        fetchMoreTransactions();
+      }
+    }
   }
 
   Future<void> fetchTransactions() async {
@@ -35,7 +50,12 @@ class _TransactionHistoryState extends State<TransactionHistory> {
       final transactionQuerySnapshot = await FirebaseFirestore.instance
           .collection('transactions')
           .orderBy('date', descending: true)
+          .limit(_itemsPerPage)
           .get();
+
+      if (transactionQuerySnapshot.docs.isNotEmpty) {
+        lastDocument = transactionQuerySnapshot.docs.last;
+      }
 
       List<Map<String, dynamic>> tempTransactions = [];
 
@@ -45,6 +65,7 @@ class _TransactionHistoryState extends State<TransactionHistory> {
         tempTransactions.add({
           'transaction': transaction.data(),
           'user': userData,
+          'snapshot': transaction,
         });
       }
 
@@ -63,13 +84,57 @@ class _TransactionHistoryState extends State<TransactionHistory> {
     }
   }
 
-  Future<Map<String, dynamic>> fetchUserData(String userId) async {
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return userDoc.data()!;
+  Future<void> fetchMoreTransactions() async {
+    if (isLoadingMore) return;
+
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    try {
+      final transactionQuerySnapshot = await FirebaseFirestore.instance
+          .collection('transactions')
+          .orderBy('date', descending: true)
+          .startAfterDocument(lastDocument!)
+          .limit(_itemsPerPage)
+          .get();
+
+      if (transactionQuerySnapshot.docs.isNotEmpty) {
+        lastDocument = transactionQuerySnapshot.docs.last;
+      }
+
+      List<Map<String, dynamic>> tempTransactions = [];
+
+      for (var transaction in transactionQuerySnapshot.docs) {
+        final userId = transaction['user-id'];
+        final userData = await fetchUserData(userId);
+        tempTransactions.add({
+          'transaction': transaction.data(),
+          'user': userData,
+          'snapshot': transaction,
+        });
+      }
+
+      setState(() {
+        transactions.addAll(tempTransactions);
+        filteredTransactions.addAll(tempTransactions);
+        isLoadingMore = false;
+      });
+    } catch (e) {
+      print('Failed to fetch more transactions: $e');
+      setState(() {
+        isLoadingMore = false;
+      });
+    }
   }
 
-  void filterTransactions(String query) async {
+  Future<Map<String, dynamic>?> fetchUserData(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.data();
+  }
+
+  void filterTransactions(String query) {
     setState(() {
       searchQuery = query;
       filteredTransactions = transactions.where((transaction) {
@@ -99,38 +164,60 @@ class _TransactionHistoryState extends State<TransactionHistory> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: filteredTransactions.length,
-                    itemBuilder: (context, index) {
-                      final transactionData = filteredTransactions[index];
-                      final transaction = transactionData['transaction'];
-                      final user = transactionData['user'];
-                      final type = transaction['type'];
-                      final amount = (transaction['amount'] as num).toDouble();
-                      final date = (transaction['date'] as Timestamp).toDate();
-                      final contextText = type == 'angsuran'
-                          ? 'Pembayaran Angsuran'
-                          : 'Pengambilan Pinjaman';
-                      final color =
-                          type == 'angsuran' ? Colors.green : Colors.blue;
+                  child: Stack(
+                    children: [
+                      ListView.builder(
+                        controller: _scrollController,
+                        itemCount: filteredTransactions.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == filteredTransactions.length) {
+                            return isLoadingMore
+                                ? const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  )
+                                : const SizedBox();
+                          }
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          child: SvgPicture.string(user['profile-pict']),
+                          final transactionData = filteredTransactions[index];
+                          final transaction = transactionData['transaction'];
+                          final user = transactionData['user'];
+                          final type = transaction['type'];
+                          final amount =
+                              (transaction['amount'] as num).toDouble();
+                          final date =
+                              (transaction['date'] as Timestamp).toDate();
+                          final contextText = type == 'angsuran'
+                              ? 'Pembayaran Angsuran'
+                              : 'Pengambilan Pinjaman';
+                          final color =
+                              type == 'angsuran' ? Colors.green : Colors.blue;
+
+                          return ListTile(
+                            leading: CircleAvatar(
+                              child: SvgPicture.string(user['profile-pict']),
+                            ),
+                            title: Text(user['username']),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(user['email']),
+                                Text(contextText),
+                                Text(formatToRP(amount)),
+                                Text(DateFormat('d MMMM yyyy').format(date)),
+                              ],
+                            ),
+                            trailing: Icon(Icons.arrow_forward, color: color),
+                          );
+                        },
+                      ),
+                      if (isLoading)
+                        const Center(
+                          child: CircularProgressIndicator(),
                         ),
-                        title: Text(user['username']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(user['email']),
-                            Text(contextText),
-                            Text(formatToRP(amount)),
-                            Text(DateFormat('d MMMM yyyy').format(date)),
-                          ],
-                        ),
-                        trailing: Icon(Icons.arrow_forward, color: color),
-                      );
-                    },
+                    ],
                   ),
                 ),
               ],
