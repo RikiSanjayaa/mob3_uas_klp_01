@@ -166,7 +166,6 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                         trailing: userProvider.role == 'administrator'
                             ? IconButton(
                                 onPressed: () {
-                                  // TODO: navigator push view user detail here
                                   showUserDetailsDialog(context, user.id);
                                 },
                                 icon: const Icon(Icons.search))

@@ -42,6 +42,12 @@ class UserProvider with ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> fetchUserData(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.data()!;
+  }
+
   Future<Map<String, dynamic>> fetchUserDetails(String userId) async {
     final userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();

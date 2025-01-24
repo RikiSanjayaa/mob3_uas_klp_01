@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mob3_uas_klp_01/UI/nasabah/inactive_account_screen.dart';
 import '/provider/pinjaman_provider.dart';
-import '/UI/admin/admin_statistics.dart';
+import 'admin/transaction_history.dart';
 import 'admin/admin_dashboard.dart';
 import '/UI/account.dart';
 import '/UI/anggota.dart';
@@ -139,9 +139,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.leaderboard),
-              label: userProvider.role == 'administrator'
-                  ? "Statistics"
-                  : "Pinjaman",
+              label:
+                  userProvider.role == 'administrator' ? "History" : "Pinjaman",
             ),
           ],
           currentIndex: _selectedIndex,
@@ -163,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             //  page pinjaman
             userProvider.role == 'administrator'
-                ? const AdminStatistics()
+                ? const TransactionHistory()
                 : const PinjamanScreen(),
           ],
         ),
